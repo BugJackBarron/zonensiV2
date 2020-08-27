@@ -1,0 +1,21 @@
+{% extends 'squelette.html' %}
+
+{% block contenu %}
+    <form action="" method="POST">
+        <div class="w3-container w3-center">
+            <h2>Connexion</h2>
+        </div>
+        <div class="w3-center">
+            {{ form.csrf_token }}
+            <p>
+                {{ form.login.label }}<br>
+                {{ form.login(size=32) }}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+            </p>
+            <input class="" type="submit" value="Connecter"/>
+        </div>
+    </form>
+{% endblock %}

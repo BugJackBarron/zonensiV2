@@ -1,0 +1,45 @@
+{% extends 'squelette.html' %}
+
+
+
+{% block contenu %}
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div class="w3-container w3-flat-sun-flower-txt">
+            <h2>Nouveau Quizz</h2>
+        </div>
+
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li class="w3-flat-amethyst">{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="w3-center">
+            {{ form.csrf_token }}
+            <p class="w3-flat-sun-flower-txt">
+                {{ form.title.label }}{{ form.title(size=32) }}
+            </p>
+            <button type="button" id="addNewField">Ajouter une question</button>
+            <div class="w3-bar-item w3-flat-sun-flower-txt">
+                {{ form.itemList }}
+            </div>
+            <div class="w3-bar-item w3-flat-sun-flower-txt">
+                {{ form.submit }}
+            </div>
+
+        </div>
+        </div>
+
+
+    </form>
+{% endblock %}
+
+
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}

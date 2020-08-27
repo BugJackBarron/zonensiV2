@@ -1,0 +1,25 @@
+{% extends 'squelette.html' %}
+
+{% block contenu %}
+
+
+    <h1 class="w3-center w3-flat-sun-flower-txt "><a class="w3-hover-amethyst "
+                                                     href="{{ url_for('view_post',post_id = post.id_post) }}">{{ post.title }}</a>
+    </h1>
+
+    <h4 class="w3-right-align w3-flat-sun-flower-txt"><a class="w3-hover-amethyst"
+                                                         href="{{ url_for('viewcategory', course = post.course) }}">{{ post.course }}</a>
+        {% if post.category != 'none' %} ->
+            <a class="w3-hover-amethyst"
+               href="{{ url_for('viewcategory',course=post.course, category=post.category) }}">{{ post.category }}</a> {% endif %}
+        {% if post.subcategory != 'none' %} -><a class="w3-hover-amethyst"
+                                                 href="{{ url_for('viewcategory',course=post.course, category=post.category,subcategory=post.subcategory) }}">{{ post.subcategory }}</a> {% endif %}
+    </h4>
+
+    <div class="w3-flat-sun-flower-txt">
+        {{ post.content|markdown }}
+    </div>
+
+{% endblock %}
+
+

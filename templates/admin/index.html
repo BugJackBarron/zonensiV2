@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='Couleurs_Perso.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <h1> Liens admins</h1>
+    <ul>
+        <li><a href="{{ url_for('index') }}">Index</a></li>
+        <li><a href="{{ url_for('add_post') }}">Ajouter un post</a></li>
+        <li><a href="{{ url_for('add_quizz') }}">Ajouter un QCM</a></li>
+        {#        <li> <a href="{{ url_for('add_category') }}">Ajouter une categoriet</a></li>#}
+    </ul>
+    </div>
+    {% block scripts %}
+
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script>
+            $(function () {
+                $("body").addClass("w3-container w3-flat-wet-asphalt  w3-flat-sun-flower-txt");
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

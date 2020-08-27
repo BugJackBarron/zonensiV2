@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+
+        <title>{% block Titre %}ZoneNSI.fr{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+        {#    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-flat.css">#}
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ url_for('static',filename='Couleurs_Perso.css') }}">
+
+    {% endblock %}
+</head>
+<body class="w3-container w3-flat-wet-asphalt  w3-flat-sun-flower-txt">
+
+<header class="w3-row ">
+    {% block header %}
+        <div class="w3-quarter">
+            <div class="w3-middle">
+                <a href="{{ url_for('index') }}"><img width="80%" src="{{ url_for('static',filename='logo.png') }}"
+                                                      alt="Zonensi.fr">
+                </a>
+            </div>
+        </div>
+        <div class="w3-half">
+            <p class="w3-center">"Toute technologie suffisamment avancée est indiscernable de la magie."</p>
+            <p class="w3-center ">Arthur C. Clarke</p>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-center">{% block login %}
+                {% if current_user.is_authenticated %}
+                    {% if current_user.login=="admin" %}
+                        <p class=""><a class="w3-hover-amethyst"
+                                       href={{ url_for('admin.index') }}>{{ current_user.login }}</a>
+                            {% else %}
+                        <p class="w3-hover-amethyst"> {{ current_user.login }}
+                    {% endif %}
+                <a class="w3-hover-amethyst" href="{{ url_for('logout') }}"> Déconnexion</a></p>
+
+                {% else %}
+
+                    <a class="w3-hover-amethyst w3-bar-item w3-center" href="{{ url_for('login') }}">Connexion</a>
+
+                {% endif %}
+            {% endblock %}</div>
+            <div class="w3-center">
+                <form action="{{ url_for("search_by_tag") }}" method="POST">
+                    <p><input name="search"/>
+                        <button type="submit"><i class="fa fa-search"></i></button>
+                    </p>
+                </form>
+            </div>
+
+        </div>
+    {% endblock %}
+    <navbar class="w3-container ">
+        {% block navbar %}
+            <div class="w3-bar w3-border w3-border-belize-hole w3-round-xxlarge">
+                <div class="w3-bar-item w3-dropdown-hover">
+                    <a href="{{ url_for('index') }}">
+                        <button class="w3-button w3-hover-amethyst w3-round-xxlarge">Accueil</button>
+                    </a>
+                </div>
+                {% for c in cats %}
+                    <div class="w3-bar-item w3-dropdown-hover">
+                        <a href="{{ url_for('viewcategory', course = c.little_name ) }}"
+                           class="w3-button w3-hover-amethyst w3-round-xxlarge">{{ c.real_name }}</a>
+                        {% set  childs=c.idg|getchild %}
+                        <div class="w3-dropdown-content w3-bar-block w3-border w3-round-xxlarge">
+                            {% for ch in childs %}
+                                <a href="{{ url_for('viewcategory', course = c.little_name,category=ch.little_name ) }}"
+                                   class="w3-bar-item w3-button w3-hover-amethyst ">{{ ch.real_name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="w3-bar-item w3-dropdown-hover w3-right ">
+                    <a class="w3-bar-item w3-button w3-hover-amethyst w3-round-xxlarge" href="https://zonensi.fr:8443">JupyterHub</a>
+                </div>
+            </div>
+        {% endblock %}
+    </navbar>
+</header>
+
+<div class=" w3-container">
+    <div class=" contenu w3-container w3-border w3-flat-wet-asphalt w3-round-xxlarge w3-border-belize-hole w3-threequarter"
+         style="height:100%;overflow:auto">
+        {% block contenu %}
+
+        {% endblock %}
+    </div>
+    <sidebar
+            class="w3-container w3-border w3-border-belize-hole w3-right w3-sidebar w3-bar-block w3-flat-wet-asphalt w3-round-xxlarge w3-quarter"
+            style="right:0">
+        {% block sidebar %}
+            {% include "sidebar.html" ignore missing %}
+        {% endblock %}
+    </sidebar>
+</div>
+<footer>
+    <p class=" w3-container w3-border-belize-hole">Avec Python, Flask, w3-css. Hébergé par Gandi. <img height="20px"
+                                                                                                       src="{{ url_for('static',filename='by-nc-sa.eu.png') }}"/>
+        2020, Zonensi.fr</p>
+</footer>
+{% block scripts %}
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath: [['$','$'], ['\\(','\\)']],
+processEscapes: true},
+jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+TeX: {
+extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+equationNumbers: {
+autoNumber: "AMS"
+}
+}
+});
+
+    </script>
+{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,143 @@
+{% extends 'squelette.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    {{ super() }}
+{% endblock %}
+
+{% block contenu %}
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div class="w3-container w3-flat-sun-flower-txt">
+            <h2>Nouveau Post</h2>
+        </div>
+
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li class="w3-flat-amethyst">{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="w3-center">
+            {{ form.csrf_token }}
+            <p class="w3-flat-sun-flower-txt">
+                {{ form.title.label }} {{ form.title(size=32) }}
+            </p>
+            <div class="w3-bar">
+                <div class="w3-bar-item w3-flat-sun-flower-txt">
+                    {{ form.course.label }} {{ form.course() }}
+                </div>
+                <div class="w3-bar-item w3-flat-sun-flower-txt">
+                    {{ form.category.label }} {{ form.category() }}
+                </div>
+                <div class="w3-bar-item w3-flat-sun-flower-txt">
+                    {{ form.subcategory.label }} {{ form.subcategory() }}
+                </div>
+
+            </div>
+        </div>
+        <p class="w3-flat-sun-flower-txt">
+            {{ form.content() }}
+        </p>
+        <p class="w3-flat-sun-flower-txt">
+            {{ form.tags.label }} {{ form.tags(size=100) }}
+        </p>
+        <div class="w3-flat-sun-flower-txt">
+            {{ form.Images.label }}{{ form.Images() }}
+        </div>
+
+        <input type="submit" value="Valider"/>
+
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
+    <!-- Start simple MDE -->
+    <script>
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("content")
+        });
+    </script>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#category').empty().append($('<option>', {
+                value: 'none',
+                text: 'None'
+            }));
+            $('#category').prop('disabled', 'disabled');
+            $('#subcategory').empty().append($('<option>', {
+                value: 'none',
+                text: 'None'
+            }));
+            $('#subcategory').prop('disabled', 'disabled');
+
+            $('#title').change(function () {
+                $('#tags').val($('#tags').val() + " " + $(this).val());
+            });
+
+            $("#course").change(function () {
+                var course_selected = $(this).val();
+                $('#tags').val($('#tags').val() + " " + course_selected);
+                ;req = $.ajax({
+                    url: '/update_addpost',
+                    type: 'POST',
+                    data: {course: course_selected}
+                })
+                    .done(function (data) {
+                        console.log(data);
+                        $('#category').prop('disabled', false);
+                        $('#category').empty().append($('<option>', {
+                            value: 'none',
+                            text: 'None'
+                        }));
+
+                        $.each(data, function (i, item) {
+                            $('#category').append($('<option>', {
+                                value: i,
+                                text: item
+                            }));
+                        });
+                    });
+            });
+
+            $("#category").change(function () {
+                var category_selected = $(this).val();
+                var course_selected = $('#course').val();
+                $('#tags').val($('#tags').val() + " " + category_selected);
+                req = $.ajax({
+                    url: '/update_addpost',
+                    type: 'POST',
+                    data: {category: category_selected, course: course_selected}
+                })
+                    .done(function (data) {
+                        console.log(data);
+                        $('#subcategory').prop('disabled', false);
+                        $('#subcategory').empty().append($('<option>', {
+                            value: 'none',
+                            text: 'None'
+                        }));
+
+                        $.each(data, function (i, item) {
+                            $('#subcategory').append($('<option>', {
+                                value: i,
+                                text: item
+                            }));
+                        });
+                    });
+            });
+
+            $("#subcategory").change(function () {
+                $('#tags').val($('#tags').val() + " " + $(this).val());
+            });
+        });
+
+
+    </script>
+{% endblock %}
