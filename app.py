@@ -8,28 +8,37 @@ from flask import Flask, render_template, url_for, request, redirect, flash, jso
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from flask_login import LoginManager, UserMixin, login_user, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flaskext.markdown import Markdown
 from sqlalchemy import ForeignKey, or_, and_
 from werkzeug import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, \
-    MultipleFileField, FieldList
+    MultipleFileField, FieldList, FileField
 from wtforms.validators import DataRequired, length, Optional, ValidationError
 from flask_wtf import FlaskForm
+from flask_wtf.file import  FileAllowed
 import config_app
-
+##___________Creation de l'app et configuraion________________##
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config_app.SECRET_KEY
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = config_app.BDD_FILE
+app.config['MAIL_SERVER']='mail.gandi.net'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = config_app.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = config_app.MAIL_PASSWORD
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
 
-###________CONFIGURATION DES MODULES_____________###
+
+###________CREATION DES MODULES_____________###
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 Markdown(app)
+mail = Mail(app)
 
 
 ###_________________CLASSES DES TABLES POUR SQLALCHEMY________________________________###
@@ -88,6 +97,14 @@ class QuizzItems(db.Model):
 class LoginForm(FlaskForm):
     login = StringField('Login', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+class MessageForm(FlaskForm):
+    title = StringField('Titre', validators=[DataRequired()])
+    message =  TextAreaField("Contenu")
+    sender = StringField('Expéditeur', validators=[DataRequired()])
+    attachement = FileField('Fichier',validators=[FileAllowed(['jpg', 'png','pdf','odt','txt'], 'Seulement les types suivants : jpg, png, odt, pdf, txt')])
+
+
 
 
 class PostForm(FlaskForm):
@@ -291,7 +308,7 @@ def format_markdown_links(form):
     return new_content
 
 
-##_________________                    __ROUTES_____________________________________##
+##___________________ROUTES_____________________________________##
 
 @app.route('/')
 def index():
@@ -369,6 +386,17 @@ def login():
     return render_template("login.html", form=form,
                            cats=get_child(Categories.query.filter_by(real_name="Root").first().idg))
 
+@app.route('/contact', methods=['GET','POST'])
+def contact() :
+    form=MessageForm()
+    print(form.errors)
+    if form.validate_on_submit() :
+
+    else :
+        return render_template('contact.html', form=form,
+                           cats=get_child(Categories.query.filter_by(real_name="Root").first().idg))
+
+##___________________________ROUTES ADMIN______________________________##
 
 @app.route('/addpost', methods=['GET', 'POST'])
 @login_required
